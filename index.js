@@ -17,11 +17,11 @@ const auth = {
 ////////////////////////////////////////////////////////////////////////
 // Helper to get current Friday's date in YYYY-MM-DD
 function getCurrentFridayDate() {
-  const now = new Date();
-  const day = now.getDay();
-  const diff = day <= 5 ? 5 - day : 12 - day; // 5 = Friday
-  const friday = new Date(now.getTime() + diff * 24 * 60 * 60 * 1000);
-  return friday.toISOString().split("T")[0];
+  const today = new Date();
+  const day = today.getDay(); // 0 = Sunday, 5 = Friday
+  const diff = day < 5 ? 5 - day : day === 5 ? 0 : 7 - (day - 5);
+  const friday = new Date(today.setDate(today.getDate() + diff));
+  return friday.toLocaleDateString('en-US');
 }
 
 // Helper to get last Friday's date in YYYY-MM-DD
@@ -185,7 +185,7 @@ async function sendEmailWithReport(data, date) {
 ////////////////////////////////////////////////////////////////////////
 // ⏰ Schedule to run every Friday at 7:30 PM EST
 cron.schedule(
-  "27 22 * * 3",
+  "30 22 * * 3",
   async () => {
     const date = getLastFridayDate();
     console.log(`📅 Running Open Gym Report for ${date}`);
