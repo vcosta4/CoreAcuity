@@ -160,6 +160,7 @@ async function sendEmailWithReport(data, date) {
   };
 
   try {
+	console.log('Starting email function...');
     await transporter.sendMail(mailOptions);
     console.log(`📧 Email sent to ${process.env.RECIPIENTS}`);
   } catch (error) {
@@ -169,7 +170,7 @@ async function sendEmailWithReport(data, date) {
 ////////////////////////////////////////////////////////////////////////
 // ⏰ Schedule to run every Friday at 7:30 PM EST
 cron.schedule(
-  "44 21 * * 3",
+  "49 21 * * 3",
   async () => {
     const date = getLastFridayDate();
     console.log(`📅 Running Open Gym Report for ${date}`);
