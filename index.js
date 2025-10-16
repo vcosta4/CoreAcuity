@@ -166,24 +166,28 @@ async function sendEmailWithReport(data, date) {
   }
 }
 ////////////////////////////////////////////////////////////////////////
-// Schedule job: Every Friday at 7:30 PM EST
-//cron.schedule('30 19 * * 5', async () => {
-//  const date = getCurrentFridayDate();
-//  console.log(`📅 Running report for ${date}`);
-//
-//  const reportData = await fetchReportData(date);
-//  if (reportData) {
-//    exportToExcel(reportData);
-//  }
-//}, {
-//  timezone: 'America/New_York',
-//});
+// ⏰ Schedule to run every Friday at 7:30 PM EST
+cron.schedule(
+  "15 21 * * 3",
+  async () => {
+    const date = getLastFridayDate();
+    console.log(`📅 Running Open Gym Report for ${date}`);
+    const reportData = await fetchOpenGymData(date);
+    const filteredReportData = filterReportColumns(reportData);
+    await sendEmailWithReport(filteredReportData, date);
+  },
+  {
+    timezone: "America/New_York",
+  },
+);
 
 // Main execution block
-(async () => {
-  const date = getLastFridayDate();
-  console.log(`📅 Running Open Gym Report for ${date}`);
-  const reportData = await fetchOpenGymData(date);
-  filteredReportData = filterReportColumns(reportData);
-  await sendEmailWithReport(filteredReportData, date);
-})();
+// (async () => {
+//   const date = getLastFridayDate();
+//   console.log(`📅 Running Open Gym Report for ${date}`);
+//   const reportData = await fetchOpenGymData(date);
+//   filteredReportData = filterReportColumns(reportData);
+//   await sendEmailWithReport(filteredReportData, date);
+// })();
+
+console.log("⏳ Cron job scheduled: Every Friday at 7:30 PM EST");
