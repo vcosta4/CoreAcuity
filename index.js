@@ -1,5 +1,6 @@
 const axios = require("axios");
 const nodemailer = require("nodemailer");
+const cron = require('node-cron');
 
 require("dotenv").config();
 const ACUITY_USER_ID = process.env.ACUITY_USER_ID;
@@ -168,7 +169,7 @@ async function sendEmailWithReport(data, date) {
 ////////////////////////////////////////////////////////////////////////
 // ⏰ Schedule to run every Friday at 7:30 PM EST
 cron.schedule(
-  "15 21 * * 3",
+  "20 21 * * 3",
   async () => {
     const date = getLastFridayDate();
     console.log(`📅 Running Open Gym Report for ${date}`);
