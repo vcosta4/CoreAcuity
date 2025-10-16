@@ -164,13 +164,13 @@ async function sendEmailWithReport(data, date) {
     await transporter.sendMail(mailOptions);
     console.log(`📧 Email sent to ${process.env.RECIPIENTS}`);
   } catch (error) {
-    console.error("❌ Error sending email:", error.message);
+    console.error("❌ Error sending email:", error);
   }
 }
 ////////////////////////////////////////////////////////////////////////
 // ⏰ Schedule to run every Friday at 7:30 PM EST
 cron.schedule(
-  "49 21 * * 3",
+  "54 21 * * 3",
   async () => {
     const date = getLastFridayDate();
     console.log(`📅 Running Open Gym Report for ${date}`);
