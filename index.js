@@ -1,6 +1,8 @@
 const axios = require("axios");
-const nodemailer = require("nodemailer");
-const cron = require('node-cron');
+// const nodemailer = require("nodemailer");
+const sgMail = require("@sendgrid/mail");
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+const cron = require("node-cron");
 
 require("dotenv").config();
 const ACUITY_USER_ID = process.env.ACUITY_USER_ID;
@@ -138,39 +140,52 @@ function generateHTMLTable(data) {
 // Function to send email
 async function sendEmailWithReport(data, date) {
   const htmlTable = generateHTMLTable(data);
-
-  const transporter = nodemailer.createTransport({
-    host: "smtp.gmail.com",
-    port: 587,
-    secure: false, // use TLS
-    auth: {
-      user: process.env.EMAIL_USER, // your Gmail address
-      pass: process.env.ACUITY_EMAIL_PASSWORD, // your App Password
-    },
-  });
-
-  const mailOptions = {
-    from: `"Open Gym Reports" <${process.env.EMAIL_USER}>`,
-    to: process.env.RECIPIENTS,
+  const msg = {
+    to: [process.env.RECIPIENTS], // multiple recipients
+    from: process.env.EMAIL_USER, // must be verified in SendGrid
     subject: `Open Gym Report for ${date}`,
-    html: `
-      <h2>Open Gym Report for ${date}</h2>
-      ${htmlTable}
-    `,
+    html: `<h2>Open Gym Report for ${date}</h2>${htmlTable}`,
   };
 
   try {
-	console.log('Starting email function...');
-    await transporter.sendMail(mailOptions);
-    console.log(`📧 Email sent to ${process.env.RECIPIENTS}`);
+    await sgMail.sendMultiple(msg);
+    console.log(`📧 Email sent via SendGrid to ${process.env.RECIPIENTS}!`);
   } catch (error) {
-    console.error("❌ Error sending email:", error);
+    console.error("❌ SendGrid error:", error.response?.body || error.message);
   }
+
+  // const transporter = nodemailer.createTransport({
+  //   host: "smtp.gmail.com",
+  //   port: 587,
+  //   secure: false, // use TLS
+  //   auth: {
+  //     user: process.env.EMAIL_USER, // your Gmail address
+  //     pass: process.env.ACUITY_EMAIL_PASSWORD, // your App Password
+  //   },
+  // });
+
+  // const mailOptions = {
+  //   from: `"Open Gym Reports" <${process.env.EMAIL_USER}>`,
+  //   to: process.env.RECIPIENTS,
+  //   subject: `Open Gym Report for ${date}`,
+  //   html: `
+  //     <h2>Open Gym Report for ${date}</h2>
+  //     ${htmlTable}
+  //   `,
+  // };
+
+  // try {
+  // console.log('Starting email function...');
+  //   await transporter.sendMail(mailOptions);
+  //   console.log(`📧 Email sent to ${process.env.RECIPIENTS}`);
+  // } catch (error) {
+  //   console.error("❌ Error sending email:", error);
+  // }
 }
 ////////////////////////////////////////////////////////////////////////
 // ⏰ Schedule to run every Friday at 7:30 PM EST
 cron.schedule(
-  "54 21 * * 3",
+  "25 22 * * 3",
   async () => {
     const date = getLastFridayDate();
     console.log(`📅 Running Open Gym Report for ${date}`);
