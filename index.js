@@ -21,7 +21,7 @@ function getCurrentFridayDate() {
   const day = today.getDay(); // 0 = Sunday, 5 = Friday
   const diff = day < 5 ? 5 - day : day === 5 ? 0 : 7 - (day - 5);
   const friday = new Date(today.setDate(today.getDate() + diff));
-  return friday.toLocaleDateString('en-US');
+  return friday.toLocaleDateString("en-US");
 }
 
 // Helper to get last Friday's date in YYYY-MM-DD
@@ -140,8 +140,14 @@ function generateHTMLTable(data) {
 // Function to send email
 async function sendEmailWithReport(data, date) {
   const htmlTable = generateHTMLTable(data);
+
+  // Convert comma-separated string to array of trimmed emails
+  const recipientList = process.env.RECIPIENTS.split(",").map((email) =>
+    email.trim(),
+  );
+
   const msg = {
-    to: [process.env.RECIPIENTS], // multiple recipients
+    to: recipientList, // multiple recipients
     from: process.env.EMAIL_USER, // must be verified in SendGrid
     subject: `Open Gym Report for ${date}`,
     html: `<h2>Open Gym Report for ${date}</h2>${htmlTable}`,
@@ -185,7 +191,7 @@ async function sendEmailWithReport(data, date) {
 ////////////////////////////////////////////////////////////////////////
 // ⏰ Schedule to run every Friday at 7:30 PM EST
 cron.schedule(
-  "30 22 * * 3",
+  "41 22 * * 3",
   async () => {
     const date = getLastFridayDate();
     console.log(`📅 Running Open Gym Report for ${date}`);
