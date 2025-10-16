@@ -191,9 +191,9 @@ async function sendEmailWithReport(data, date) {
 ////////////////////////////////////////////////////////////////////////
 // ⏰ Schedule to run every Friday at 7:30 PM EST
 cron.schedule(
-  "45 22 * * 3",
+  "30 19 * * 5",
   async () => {
-    const date = getLastFridayDate();
+    const date = getCurrentFridayDate();
     console.log(`📅 Running Open Gym Report for ${date}`);
     const reportData = await fetchOpenGymData(date);
     const filteredReportData = filterReportColumns(reportData);
